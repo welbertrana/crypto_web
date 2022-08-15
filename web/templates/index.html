@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Crypto Market Summary</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Crypto Market Summary">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Favicon -->
+	<link href="{{ url_for('static', filename='img/bitcoin.ico')}}" rel="shortcut icon"/>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/themify-icons.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+
+	<!--[if lt IE 9]>
+	  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js')}}"></script>
+	  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js')}}"></script>
+	<![endif]-->
+	<script src="{{ url_for('static', filename='js/chart.min.js')}}"></script>
+</head>
+<body>
+	<!-- Page Preloder -->
+	<div id="preloder">
+		<div class="loader"></div>
+	</div>
+
+	<!-- Header section -->
+	<header class="header-section clearfix">
+		<div class="container-fluid">
+			<a href="index.html" class="site-logo">
+				<img src="{{ url_for('static', filename='img/logo.png')}}" alt="">
+			</a>
+			<!-- <div href="" class="site-btn sb-gradients sbg-line">Refresh Data</div> -->
+		</div>
+	</header>
+	<!-- Header section end -->
+
+	<!-- Market Stats section -->
+	<section class="about-section spad">
+		<div class="container">
+			<div class="row">
+				<div class="about-img">
+					<img src="{{ url_for('static', filename='img/about-img.png')}}" alt="">
+				</div>
+				<div class="col-lg-6 offset-lg-6 about-text">
+					<h2>Market Stats</h2>
+					<p>As of {{stat.date}}</p>
+					<div><span>Total Market Cap:</span> {{stat.total_mcap}}</div>
+					<div><span>Total Volume:</span> {{stat.total_volume}}</div>
+					<div><span>BTC Dominance:</span> {{stat.btc_d}}</div>
+					<div><span>ETH Dominance:</span> {{stat.eth_d}}</div>
+					<div><span>Marketcap Change:</span> {{stat.mcap_change}}</div>
+					<div><span>Volume Change:</span> {{stat.volume_change}}</div>
+					<div><span>Average Change%:</span> {{stat.avg_change_percent}}</div>
+					<div><span>Volume ATH:</span> {{stat.volume_ath}}</div>
+					<div><span>Marketcap ATH:</span> {{stat.mcap_ath}}</div>
+					<div><span>Total Coins:</span> {{stat.coins_count}}</div>
+					<div><span>Active Markets:</span> {{stat.active_markets}}</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Market Stats section end -->
+
+
+	<!-- Top Coins section -->
+	<section class="features-section spad gradient-bg">
+		<div class="container text-white">
+			<div class="section-title text-center">
+				<h2>Daily Top Coins</h2>
+			</div>
+			<div class="row">
+				{% for n_top in top %}
+					<div class="col-md-6 col-lg-4 feature">
+						<img src="https://assets.coincap.io/assets/icons/{{n_top.symbol.lower()}}@2x.png">
+						<div class="feature-content">
+							<h4>{{n_top.name}}</h4>
+							<h6>{{n_top.symbol}}</h6>
+							<div>Price: <span>${{n_top.price_usd}} <b>({{n_top.percent_change_24h}})</b></span></div>
+							<div>24H Volume: <span>{{n_top.volume24}}</span></div>
+							<div>Circulating Supply: <span>{{n_top.csupply}}</span></div>
+							<div>Market Cap: <span>${{n_top.market_cap_usd}}</span></div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+	<!-- Top Coins section end -->
+
+
+	<!-- Top Gainers section -->
+	<section class="process-section spad">
+		<div class="container">
+			<div class="section-title text-center">
+				<h2>Top 6 <span class="green-color">Gainers</span> for 7 Days</h2>
+				<p>Coins in Top Gainers might indicate its Bullish Trend!</p>
+			</div>
+			<div class="charts">
+				<canvas id="topChart"></canvas>	
+			</div>
+			<script>
+				var ctx = document.getElementById('topChart').getContext('2d');
+				var lineChart = new Chart(ctx, {
+					type: 'line',
+					data: {{ top_chart | safe }},
+					options: {
+						responsive: true,
+        				maintainAspectRatio: false,
+						scales: {
+							y: {
+								beginAtZero: true
+							},
+							x: {
+								reverse: true
+							}
+						}
+					}
+				});
+			</script>
+			<div class="row">
+				{% for n_gain in gainer %}
+				<div class="col-md-4 process">
+					<div class="process-step">
+						<figure class="process-icon">
+							<img src="https://assets.coincap.io/assets/icons/{{n_gain.symbol.lower()}}@2x.png">
+						</figure>
+						<h4>{{n_gain.name}}</h4>
+						<h6>{{n_gain.symbol}}</h6>
+						<div class="process-desc">
+							<div>Price: <span>${{n_gain.price_usd}} <b>({{n_gain.percent_change_7d}})</b></span></div>
+							<div>24H Volume: <span>{{n_gain.volume24}}</span></div>
+							<div>Circulating Supply: <span>{{n_gain.csupply}}</span></div>
+							<div>Market Cap: <span>${{n_gain.market_cap_usd}}</span></div>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+	<!-- Top Gainers section end -->
+
+
+	<!-- Top Losers section -->
+	<section class="process-section spad">
+		<div class="container">
+			<div class="section-title text-center">
+				<h2>Top 6 <span class="red-color">Losers</span> for 7 Days</h2>
+				<p>Coins in Top Loser might indicate its Bearish Trend!</p>
+			</div>
+			<div class="charts">
+				<canvas id="loserChart"></canvas>	
+			</div>
+			<script>
+				var ctx = document.getElementById('loserChart').getContext('2d');
+				var lineChart = new Chart(ctx, {
+					type: 'line',
+					data: {{ loser_chart | safe }},
+					options: {
+						responsive: true,
+        				maintainAspectRatio: false,
+						scales: {
+							y: {
+								beginAtZero: true
+							},
+							x: {
+								reverse: true
+							}
+						}
+					}
+				});
+			</script>
+			<div class="row">
+				{% for n_loser in losers %}
+				<div class="col-md-4 process">
+					<div class="process-step">
+						<figure class="process-icon">
+							<img src="https://assets.coincap.io/assets/icons/{{n_loser.symbol.lower()}}@2x.png">
+						</figure>
+						<h4>{{n_loser.name}}</h4>
+						<h6>{{n_loser.symbol}}</h6>
+						<div class="process-asc">
+							<div>Price: <span>${{n_loser.price_usd}} <b>({{n_loser.percent_change_7d}})</b></span></div>
+							<div>24H Volume: <span>{{n_loser.volume24}}</span></div>
+							<div>Circulating Supply: <span>{{n_loser.csupply}}</span></div>
+							<div>Market Cap: <span>${{n_loser.market_cap_usd}}</span></div>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+
+	</section>
+	<!-- Top Losers section end -->
+
+
+	<!--====== Javascripts & Jquery ======-->
+	<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/owl.carousel.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/main.js')}}"></script>	
+
+
+</body>
+</html>
